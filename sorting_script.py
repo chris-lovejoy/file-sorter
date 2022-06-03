@@ -103,4 +103,5 @@ def get_key(my_dict, val):
 ### COMMAND LINE CALL
 
 if __name__ == "__main__":
+    # TODO: add parsing of command line arguments
     sort_files()
