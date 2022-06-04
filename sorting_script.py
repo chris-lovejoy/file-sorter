@@ -61,11 +61,8 @@ def check_for_snippet(root, file):
         selected_snippet = get_key(snippet_present, 1)
         return(True, selected_snippet)
     else:
-        print("more than one snippet present")
-        return (False, "") # TODO: update to return True + the selected snippet
-        # TODO: add logic to deal with multiple snippets being present
-        # will likely involve looking at which appears first.
-        # probably write a separate function to check this
+        selected_snippet = resolve_multi_snippet(snippet_present, root, file)
+        return(True, selected_snippet)
 
 
 def move_file(root,file,snippet,move_counter):
@@ -107,6 +104,26 @@ def initiate_log_file():
                         format='%(asctime)s - %(message)s',
                         level=logging.INFO)
     return None
+
+
+def resolve_multi_snippet(snippet_present_dict, root, file):
+    if config.multi_snippet_method == "first":
+        earliest_index = float('inf')
+        earliest_snippet = ""
+        with open(os.path.join(root,file), 'r') as f:
+            file_contents = f.read()
+            for key in snippet_present_dict.keys():
+                if snippet_present_dict[key] == 1:
+                    snippet_index = file_contents.find(key)
+                    if snippet_index < earliest_index:
+                        earliest_index = snippet_index
+                        earliest_snippet = key
+                # print(f"earliest index is {earliest_index} and earliest_snippet is {earliest_snippet}.")
+        selected_snippet = earliest_snippet
+
+    # TODO: add more options for dealing with multiple snippets. For example, based on priority
+
+    return selected_snippet
 
 
 ### COMMAND LINE CALL
