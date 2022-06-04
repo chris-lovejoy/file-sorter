@@ -6,8 +6,10 @@ import os
 import logging
 from datetime import datetime
 
+
 def sort_files(root_dir):
 
+    move_counter = 0
     initiate_log_file(root_dir)
 
     for root,dirs,files in os.walk(root_dir):
@@ -20,7 +22,8 @@ def sort_files(root_dir):
                 (present, snippet) = check_for_snippet(root,file)
 
                 if present:
-                    move_file(root,file,snippet)
+                    move_counter = move_file(root,file,snippet,move_counter)
+
                 else:
                     break
 
@@ -28,7 +31,7 @@ def sort_files(root_dir):
                 # IN PARTICULAR, because may currently will try to move some files twice - as loops 
                 # back over them (once moved into a subfolder)
 
-    # TODO: add a print / log statement at the end about the total number of files that have been moved.
+    logging.info(f"File sorting complete. In total, {move_counter} files were moved.")
 
     return None
 
@@ -52,13 +55,13 @@ def check_for_snippet(root, file):
                     snippet_present[snippet] = 1
 
     if sum(snippet_present.values()) == 0:
-        print(f"no snippets present in file {os.path.join(root,file)}.")
+        print(f"no snippets present in file.")
         return (False, "")
     elif sum(snippet_present.values()) == 1:
         selected_snippet = get_key(snippet_present, 1)
         return(True, selected_snippet)
     else:
-        print("more than one present")
+        print("more than one snippet present")
         return (False, "") # TODO: update to return True + the selected snippet
         # TODO: add logic to deal with multiple snippets being present
         # will likely involve looking at which appears first.
@@ -66,16 +69,19 @@ def check_for_snippet(root, file):
 
 
 
-def move_file(root,file,snippet):
+def move_file(root,file,snippet,move_counter):
     new_root = os.path.join(root_dir, config.snippet_directory_mapping[snippet])
 
     if root == new_root:
-        print("file", file, "contains snippet but already in correct location.")
-        return None
+        print("file", file, "contains snippet but file already in correct location.")
+        return move_counter
 
-    logging.info(f"moving file {file} from {root} to {new_root}")
-    os.rename(os.path.join(root,file),os.path.join(new_root,file))
-    return None
+    else:
+        logging.info(f"moving file {file} from {root} to {new_root}")
+        print(f"moving file {file} from {root} to {new_root}")
+        os.rename(os.path.join(root,file),os.path.join(new_root,file))
+        move_counter += 1
+        return move_counter
 
 
 # TODO: add a script that checks for existence of all folders specified in the 
