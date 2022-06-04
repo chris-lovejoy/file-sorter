@@ -28,10 +28,6 @@ def sort_files(root_dir):
                 else:
                     break
 
-                # TODO: consider saving up the required file moves until later, and executing together
-                # IN PARTICULAR, because may currently will try to move some files twice - as loops 
-                # back over them (once moved into a subfolder)
-
     logging.info(f"File sorting complete. In total, {move_counter} files were moved.")
 
     return None
@@ -79,11 +75,6 @@ def move_file(root,file,snippet,move_counter):
         move_counter += 1
         return move_counter
 
-
-# TODO: add a script that checks for existence of all folders specified in the 
-# snippet_directory_mapping config. (as if folders don't exist, ie. when I've re-named
-# them, I don't want to create them)
-# (note: I can use this as a separately-run script to check for changes to file structure.)
 
 
 ### HELPER FUNCTIONS
