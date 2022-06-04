@@ -36,7 +36,6 @@ def sort_files(root_dir):
 
     return None
 
-
 def check_for_snippet(root, file):
 
     snippets = config.snippet_directory_mapping.keys()
@@ -45,12 +44,12 @@ def check_for_snippet(root, file):
     for snippet in snippets:
         with open(os.path.join(root,file), 'r') as f:
             if config.top_x_lines:
-                # (add logic for looking only at x number of lines)
-                # necessity for this depends on time it takes for long files
-                # TODO: implement logic then run a time test to compare
-                # See previous implemnentation for template for this
-                print("top x lines")
-                pass
+                top_x_lines_list = f.readlines()[:config.num_x_lines]
+                for line in top_x_lines_list:
+                    if snippet in line:
+                        snippet_present[snippet] = 1
+                # TODO: run a test to see if this is faster
+                print(f"looking at top {config.num_x_lines} lines for snippet {snippet}")
             else:
                 if snippet in f.read():
                     snippet_present[snippet] = 1
@@ -113,5 +112,5 @@ def initiate_log_file():
 ### COMMAND LINE CALL
 
 if __name__ == "__main__":
-    root_dir = os.getcwd() # TODO: check whether this uses current directory or directory of sorting_script.py
+    root_dir = os.getcwd()
     sort_files(root_dir)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 file_extension = ".md"
-top_x_lines = False
+top_x_lines = True
 num_x_lines = 10
 
 # (add way to deal with multi-snippets)
