@@ -3,27 +3,26 @@
 
 import config
 import os
+import logging
+from datetime import datetime
 
-root_dir = os.getcwd()
+def sort_files(root_dir):
 
-def sort_files():
+    initiate_log_file(root_dir)
 
     for root,dirs,files in os.walk(root_dir):
 
         for file in files:
             if(file.endswith(config.file_extension)):
-                # TODO: enable conditional to accept multiple file extensions
 
-                # temporary print statement
-                print(f"\nnow looking at file {root}/{file}.")
+                print(f"Looking at file {root}/{file}.")
 
                 (present, snippet) = check_for_snippet(root,file)
 
                 if present:
-                    move_file(root,file, snippet)
+                    move_file(root,file,snippet)
                 else:
                     break
-                    # TODO: check that breaks to the appropriate level
 
                 # TODO: consider saving up the required file moves until later, and executing together
                 # IN PARTICULAR, because may currently will try to move some files twice - as loops 
@@ -45,6 +44,7 @@ def check_for_snippet(root, file):
                 # (add logic for looking only at x number of lines)
                 # necessity for this depends on time it takes for long files
                 # TODO: implement logic then run a time test to compare
+                # See previous implemnentation for template for this
                 print("top x lines")
                 pass
             else:
@@ -59,7 +59,7 @@ def check_for_snippet(root, file):
         return(True, selected_snippet)
     else:
         print("more than one present")
-        return (False, "") # TODO: update to return the selected snippet
+        return (False, "") # TODO: update to return True + the selected snippet
         # TODO: add logic to deal with multiple snippets being present
         # will likely involve looking at which appears first.
         # probably write a separate function to check this
@@ -68,24 +68,19 @@ def check_for_snippet(root, file):
 
 def move_file(root,file,snippet):
     new_root = os.path.join(root_dir, config.snippet_directory_mapping[snippet])
-        # TODO: modify this so that it uses the full directory
 
     if root == new_root:
         print("file", file, "contains snippet but already in correct location.")
         return None
 
-    # TODO: add a log for every time this is executed
-    print("moving file", file, "\n\tfrom:\t", root, "\n\tto:\t", new_root)
+    logging.info(f"moving file {file} from {root} to {new_root}")
     os.rename(os.path.join(root,file),os.path.join(new_root,file))
     return None
-
-
 
 
 # TODO: add a script that checks for existence of all folders specified in the 
 # snippet_directory_mapping config. (as if folders don't exist, ie. when I've re-named
 # them, I don't want to create them)
-
 
 
 ### HELPER FUNCTIONS
@@ -95,13 +90,21 @@ def get_key(my_dict, val):
     for key, value in my_dict.items():
          if val == value:
              return key
- 
     return "key doesn't exist"
 
 
+def initiate_log_file(root_dir):
+    date_time_now = str(datetime.now())[:16].replace(" ","_")
+    log_filename = os.path.join(root_dir,"logs",f"{date_time_now}.log")
+    logging.basicConfig(filename=log_filename,
+                        format='%(asctime)s - %(message)s',
+                        level=logging.INFO)
+    return None
 
 ### COMMAND LINE CALL
 
 if __name__ == "__main__":
     # TODO: add parsing of command line arguments
-    sort_files()
+
+    root_dir = os.getcwd() # TODO: check whether this uses current directory or directory of sorting_script.py
+    sort_files(root_dir)
