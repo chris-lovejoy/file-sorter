@@ -10,7 +10,8 @@ from datetime import datetime
 def sort_files(root_dir):
 
     move_counter = 0
-    initiate_log_file(root_dir)
+    initiate_log_file()
+    logging.info(f"Commencing sequence in f{root_dir}.")
 
     for root,dirs,files in os.walk(root_dir):
 
@@ -68,9 +69,8 @@ def check_for_snippet(root, file):
         # probably write a separate function to check this
 
 
-
 def move_file(root,file,snippet,move_counter):
-    new_root = os.path.join(root_dir, config.snippet_directory_mapping[snippet])
+    new_root = config.snippet_directory_mapping[snippet]
 
     if root == new_root:
         print("file", file, "contains snippet but file already in correct location.")
@@ -87,6 +87,7 @@ def move_file(root,file,snippet,move_counter):
 # TODO: add a script that checks for existence of all folders specified in the 
 # snippet_directory_mapping config. (as if folders don't exist, ie. when I've re-named
 # them, I don't want to create them)
+# (note: I can use this as a separately-run script to check for changes to file structure.)
 
 
 ### HELPER FUNCTIONS
@@ -99,18 +100,18 @@ def get_key(my_dict, val):
     return "key doesn't exist"
 
 
-def initiate_log_file(root_dir):
+def initiate_log_file():
     date_time_now = str(datetime.now())[:16].replace(" ","_")
-    log_filename = os.path.join(root_dir,"logs",f"{date_time_now}.log")
+    python_script_dir = os.path.dirname(os.path.realpath(__file__))
+    log_filename = os.path.join(python_script_dir,"logs",f"{date_time_now}.log")
     logging.basicConfig(filename=log_filename,
                         format='%(asctime)s - %(message)s',
                         level=logging.INFO)
     return None
 
+
 ### COMMAND LINE CALL
 
 if __name__ == "__main__":
-    # TODO: add parsing of command line arguments
-
     root_dir = os.getcwd() # TODO: check whether this uses current directory or directory of sorting_script.py
     sort_files(root_dir)
